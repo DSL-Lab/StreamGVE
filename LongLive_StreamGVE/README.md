@@ -1,6 +1,6 @@
 # LongLive & StreamGVE
 
-This folder contains the StreamGVE implementation built on [LongLive](https://github.com/NVlabs/LongLive) codebase.
+This folder contains the StreamGVE implementation built on [LongLive v1.0](https://github.com/NVlabs/LongLive/tree/v1.0) codebase.
 
 Most files are inherited from the upstream LongLive repository. The implementation of StreamGVE is mainly located in:
 
