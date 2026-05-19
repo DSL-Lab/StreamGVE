@@ -8,7 +8,7 @@
 [![Code](https://img.shields.io/badge/GitHub-Code-blue?style=flat-square&logo=github&logoColor=white)](https://github.com/DSL-Lab/StreamGVE/)
 [![Page](https://img.shields.io/badge/StreamGVE-Project_Page-peru?style=flat-square&logo=googlechrome&logoColor=white)](https://dsl-lab.github.io/StreamGVE/)
 
-VIdeo Results are all shown in our [*Project Page*](https://dsl-lab.github.io/StreamGVE/).
+Video Results are all shown in our [*Project Page*](https://dsl-lab.github.io/StreamGVE/).
 
 ---
 
