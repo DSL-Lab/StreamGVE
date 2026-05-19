@@ -1,0 +1,10 @@
+__pycache__
+*.egg-info
+
+wan_models
+checkpoints
+long_bench_eval
+videos
+outputs
+temp_vis
+wandb
