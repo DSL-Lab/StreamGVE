@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamGVE: Training-Free Video Editing via Few-Step Streaming Video Generation</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ]
+        });"></script>
+    <link rel="icon" type="image/png" href="assets/icon.png">
+</head>
+<body>
+    <!-- ==================== HEADER SECTION ==================== -->
+    <header class="site-header">
+        <div class="container">
+            <h1 class="paper-title">StreamGVE</h1>
+            <p class="paper-subtitle">Training-Free Video Editing via Few-Step Streaming Video Generation</p>
+
+            <!-- Author List -->
+            <div class="authors">
+                <span class="author">
+                    <a href="https://scholar.google.com/citations?user=UCPOxvEAAAAJ&hl=en" target="_blank">Guanlong Jiao</a><sup>1,4</sup>
+                </span>
+                <span class="author">
+                    <a href="https://zhangcyg.github.io/" target="_blank">Chenyangguang Zhang</a><sup>2</sup>
+                </span>
+                <span class="author">
+                    <a href="https://www.linkedin.com/in/jia-jun-cheng-xian-56b00a208/" target="_blank">Jia Jun Cheng Xian</a><sup>1,4</sup>
+                </span>
+                <span class="author">
+                    <a href="https://scholar.google.com/citations?user=RWGzBeoAAAAJ&hl=en" target="_blank">Zewei Zhang</a><sup>1,3</sup>
+                </span>
+                <span class="author">
+                    <a href="https://lrjconan.github.io/" target="_blank">Renjie Liao</a><sup>1,4,5</sup>
+                </span>
+            </div>
+
+            <!-- Affiliations -->
+            <div class="affiliations">
+                <p>
+                    <sup>1</sup> The University of British Columbia &nbsp;
+                    <sup>2</sup> ETH Zürich &nbsp;
+                    <sup>3</sup> McMaster University
+                </p>
+                <p>
+                    <sup>4</sup> Vector Institute &nbsp;
+                    <sup>5</sup> Canada CIFAR AI Chair
+                </p>
+            </div>
+
+            <!-- Button Bar -->
+            <div class="button-bar">
+                <!-- TODO: add actual paper link -->
+                <a href="" class="btn btn-primary" target="_blank">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    Paper
+                </a>
+                <a href="https://github.com/DSL-Lab/StreamGVE/" class="btn btn-secondary" target="_blank">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    Code
+                </a>
+                <a href="#video-gallery" class="btn btn-secondary">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    Videos
+                </a>
+                <a href="#results" class="btn btn-secondary">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="9" y1="9" x2="15" y2="9"></line>
+                        <line x1="9" y1="15" x2="15" y2="15"></line>
+                    </svg>
+                    Results
+                </a>
+                <a href="#citation" class="btn btn-secondary">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
+                        <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
+                    </svg>
+                    BibTeX
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== TEASER SECTION ==================== -->
+    <section class="teaser-section">
+        <div class="container">
+            <!-- Teaser Image -->
+            <figure class="teaser-figure">
+                <img src="assets/teaser.png" alt="StreamGVE teaser showing text-driven and image-prompted video editing results">
+                <figcaption>
+                    <strong>Training-free text-driven (optional image-conditioned) streaming video editing.</strong>
+                    StreamGVE supports both text-driven video editing and first-frame-prompted editing, suitable for various editing tasks while having superiority in background preservation. Developed on text-to-video streaming generation models, StreamGVE supports efficient video editing for any length, with less than 0.32 second per frame (5 steps) on a single A100 GPU.
+                </figcaption>
+            </figure>
+
+        </div>
+    </section>
+
+    <!-- ==================== ABSTRACT SECTION ==================== -->
+    <section class="abstract-section">
+        <div class="container">
+            <h2>Abstract</h2>
+            <p>
+                Although existing video editing methods are generally feasible, they often require many costly iterations and still struggle to deliver high-quality yet satisfying editing results.
+                We attribute this limitation to the <strong>prevalent data-to-data paradigm</strong>, which is less compatible with modern generative models than <strong>noise-to-data generation</strong>.
+            </p>
+            <p>
+                To address this gap, we revisit video editing from a noise-to-data perspective and propose <strong>Stream</strong>ing-<strong>G</strong>eneration-based <strong>V</strong>ideo <strong>E</strong>diting (<strong>StreamGVE</strong>), which preserves few-step sampling while seamlessly injecting source-video conditions.
+            </p>
+            <p>
+                Built on pre-trained streaming generation models, StreamGVE introduces <i>dual-branch fast sampling</i> with a <i>self-attention bridge</i> and <i>cross-attention grounding/boosting</i> to satisfy both sampling and conditioning requirements.
+                We further propose <i>source-oriented guidance</i> to improve target-generation quality, and a <i>visual prompting strategy</i> to enhance editing flexibility and practicality.
+            </p>
+            <p>
+                The method is effective, robust, and generalizable across different models.
+                Extensive experiments on diverse video editing tasks show that StreamGVE consistently outperforms existing approaches, even in few-step settings with minimal time cost.
+            </p>
+        </div>
+    </section>
+
+    <!-- ==================== VIDEO GALLERY SECTION ==================== -->
+    <section class="video-section">
+        <div class="container">
+            <h2 id="video-gallery">Video Gallery</h2>
+
+            <!-- ==========================================================
+                 VIDEO COMPARISON SLIDER PATTERN (like UniEdit-Flow)
+                 ==========================================================
+                 Drag the slider left/right to compare source and edited videos.
+                 Videos are synchronized: play, pause, and seek together.
+
+                 To add a new comparison:
+                 1. Copy the entire <div class="video-card"> block below
+                 2. Replace:
+                    - [SOURCE_VIDEO_PATH]: Path to source video (e.g., "assets/source1.mp4")
+                    - [TARGET_VIDEO_PATH]: Path to edited video (e.g., "assets/edit1.mp4")
+                    - [VIDEO_CAPTION]: Description of the editing case
+                 3. Remove or keep the placeholder block as needed
+            -->
+
+            <!-- ==========================================================
+                 SHORT VIDEO EDITING ROW
+                 ==========================================================
+                 Carousel with dot navigation for short video editing samples.
+                 Supports 3+ samples with left/right navigation via dots.
+            -->
+            <h3 class="video-row-title">Short-Video Editing</h3>
+            <div class="video-carousel" data-carousel="short">
+                <div class="carousel-track">
+                    <!-- VIDEO 9: Dog to Seal -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0089_A_dog/2_A seal is clapping i.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0089_A_dog/0089_A_dog.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Change the dog into a seal.</p>
+                    </div>
+                    <!-- VIDEO 1 -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0043_parkour/1_A spiderman is perfo.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0043_parkour/0043_parkour.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Replace the man with a spiderman.</p>
+                    </div>
+                    <!-- VIDEO 2 -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0014_burnout/3_A pink car is perfor.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0014_burnout/0014_burnout.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Change the color of the car to pink.</p>
+                    </div>
+                    <!-- VIDEO 7: Cat -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0078_A_cat/0078_A_cat_remove-step=15-fg_boost=4.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0078_A_cat/0078_A_cat.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Remove the toy from the scene.</p>
+                    </div>
+                    <!-- VIDEO 6: Dog Agility -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0072_dog-agility/2_A unicorn is skillfu.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0072_dog-agility/0072_dog-agility.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Replace the dog with a horse.</p>
+                    </div>
+                    <!-- VIDEO 1 -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0001_bus/1_A jeep is moving ste.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0001_bus/0001_bus.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Change the bus to a jeep.</p>
+                    </div>
+                    <!-- VIDEO 8: Sports Car -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0086_A_red_sports_car/1_A jeep is speeding d.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0086_A_red_sports_car/0086_A_red_sports_car.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Change the red sports car to a jeep.</p>
+                    </div>
+                    <!-- VIDEO 4: Gym Ball -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0042_gym-ball/2_A panda is performin.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0042_gym-ball/0042_gym-ball.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Replace the man with a panda.</p>
+                    </div>
+                    <!-- VIDEO 9: Dog add sunglasses -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0089_A_dog/5_A dog wearing sungla.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0089_A_dog/0089_A_dog.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Add sunglasses to the dog.</p>
+                    </div>
+                    <!-- VIDEO 1 -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0001_bus/4_A glass city bus is .mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0001_bus/0001_bus.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Change the city bus to a glass bus.</p>
+                    </div>
+                    <!-- VIDEO 5: Hike -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0048_hike/2_A robot with a backp.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0048_hike/0048_hike.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Replace the man with a robot.</p>
+                    </div>
+                    <!-- VIDEO 10: Swan -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0094_A_swan/2_A paper boat is floa.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0094_A_swan/0094_A_swan.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Replace the swan with a paper boat.</p>
+                    </div>
+                    <!-- VIDEO 1 -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0095_A_crow/1_An owl is perched on.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0095_A_crow/0095_A_crow.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Replace the crow with an owl.</p>
+                    </div>
+                    <!-- VIDEO 1 -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0093_A_helicopter/3_A fuchsia helicopter.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0093_A_helicopter/0093_A_helicopter.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Change the helicopter's color to fuchsia.</p>
+                    </div>
+                    <!-- VIDEO 1 -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0101_yg/0101_yg-Dragon-Robe.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/short_videos/0101_yg/0101_yg.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Replace the jacket with a dragon robe.</p>
+                    </div>
+                    <!-- ADD MORE SHORT VIDEOS HERE -->
+                </div>
+                <!-- Dot Navigation -->
+                <div class="carousel-dots"></div>
+            </div>
+
+            <!-- ==========================================================
+                 LONG VIDEO EDITING ROW
+                 ==========================================================
+                 Carousel with dot navigation for long video editing samples.
+                 Supports 3+ samples with left/right navigation via dots.
+            -->
+            <h3 class="video-row-title">Long-Video Editing</h3>
+            <div class="video-carousel" data-carousel="long">
+                <div class="carousel-track">
+                    <!-- VIDEO 6 -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/long_videos/11461333/identity_swap.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/long_videos/11461333/11461333.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Replace the tiger with an elephant.</p>
+                    </div>
+                    <!-- VIDEO 3 -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/long_videos/4795027/color.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/long_videos/4795027/4795027.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Change the coffee's color to light brown.</p>
+                    </div>
+                    <!-- VIDEO 4 -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/long_videos/6434178/identity_swap.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/long_videos/6434178/6434178.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Replace the monkey with a red panda.</p>
+                    </div>
+                    <!-- VIDEO 5 -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/long_videos/10570816/color.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/long_videos/10570816/10570816.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Change the color of the dress to red.</p>
+                    </div>
+                    <!-- VIDEO 2 -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/long_videos/4768500/identity_swap.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/long_videos/4768500/4768500.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Change the thirsty dog to a goat.</p>
+                    </div>
+                    <!-- VIDEO 1 -->
+                    <div class="video-card">
+                        <div class="video-compare-container">
+                            <video class="video-bg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/long_videos/4736786/identity_swap.mp4" type="video/mp4">
+                            </video>
+                            <video class="video-fg" muted loop playsinline preload="metadata">
+                                <source src="./video_assets/long_videos/4736786/4736786.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-labels">
+                                <span class="video-label">Source</span>
+                                <span class="video-label">Edited</span>
+                            </div>
+                            <div class="compare-slider">
+                                <div class="compare-handle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="video-caption">Replace the dancer with a brown horse.</p>
+                    </div>
+                    <!-- ADD MORE LONG VIDEOS HERE -->
+                </div>
+                <!-- Dot Navigation -->
+                <div class="carousel-dots"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ==================== METHOD SECTION ==================== -->
+    <section class="method-section" id="method-section">
+        <div class="container">
+            <h2>Method</h2>
+
+            <div class="paradigm-highlight">
+                <h3>The Paradigm Shift: Data-to-Data → Noise-to-Data</h3>
+                <p>
+                    Conventional training-free editing follows a <strong>data → data</strong> paradigm: inversion-based methods perform source → noise → target transfer, while inversion-free methods perform direct source → target transfer. Both approaches are tightly coupled to iterative procedures and cannot well exploit fast few-step sampling.
+                </p>
+                <p>
+                    We propose viewing video editing as <strong>source-conditioned noise → target generation</strong>. This reformulation preserves the few-step sampling capability of streaming generators while injecting source-video conditions for controllability. Built on pre-trained streaming models (<a href="https://github.com/guandeh17/Self-Forcing">Self Forcing</a>, <a href="https://github.com/NVlabs/LongLive">LongLive</a>), StreamGVE realizes this paradigm through the dual-branch fast sampling and attention manipulations.
+                </p>
+            </div>
+
+            <!-- Framework Figure -->
+            <figure class="method-figure">
+                <img src="assets/framework.png" alt="StreamGVE framework overview">
+                <figcaption>
+                    <strong>Overview of the StreamGVE framework.</strong> (a) The generation process of dual-branch fast sampling with source-oriented guidance. (b) Self-attention bridge (S.A.B.) for source condition injection and cross-attention grounding for editing-related region identification.
+                </figcaption>
+            </figure>
+
+        </div>
+    </section>
+
+    <!-- ==================== TECHNICAL DETAILS SECTION ==================== -->
+    <section class="technical-section" id="technical-section">
+        <div class="container">
+            <div class="technical-details-header collapsed" onclick="toggleTechnicalDetails()">
+                <h2>Technical Details</h2>
+                <svg class="technical-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18l6-6-6-6"/>
+                </svg>
+            </div>
+
+            <div class="technical-details-content collapsed">
+            <!-- Dual-Branch Fast Sampling (Section 4.1) -->
+            <h3>Dual-Branch Fast Sampling</h3>
+            <p>
+                We extend stochastic few-step sampling to a dual-branch framework. Given a source video with its source prompt and target prompt, we denoise both in parallel under shared noise conditions:
+            </p>
+
+            <div class="formula-box">
+                $$x_{t_i}^{\text{src}} = (1-t_i)x_0^{\text{src}} + t_i\epsilon_{t_i}, \quad x_{t_i}^{\text{tgt}} = (1-t_i)z_{t_i}^{\text{tgt}} + t_i\epsilon_{t_i}, \quad \epsilon_{t_i} \sim \mathcal{N}(0,1)$$
+            </div>
+
+            <p>
+                This allows injecting source conditions at every denoising step:
+            </p>
+
+            <div class="formula-box">
+                $$v_{t_i}^{\text{src}} = v_\theta(x_{t_i}^{\text{src}}, t_i), \quad v_{t_i}^{\text{tgt}} = v_\theta^*(x_{t_i}^{\text{tgt}}, t_i \mid x_{t_i}^{\text{src}}), \quad i \in [1,N]$$
+            </div>
+
+            <!-- Self-Attention Bridge (Section 4.2) -->
+            <h3>Self-Attention Bridge</h3>
+            <p>
+                We build a self-attention bridge between source and target branches to enable source condition injection. It consists of three components:
+            </p>
+
+            <h4>Query Blending: <i>Structure and Motion Preservation</i></h4>
+            <p>
+                Query blending uses a timestep-dependent blending ratio to preserve the structure. The blending ratio $r_{t_i}$ increases from 0 to 1 as timestep decreases, with $\rho$ controlling the preservation strength:
+            </p>
+
+            <div class="formula-box">
+                $$\tilde{Q}_{\text{SA}}^{\text{tgt}} = r_{t_i} Q_{\text{SA}}^{\text{tgt}} + (1 - r_{t_i}) Q_{\text{SA}}^{\text{src}}, \quad r_{t_i} = 1 - t_{i-1}^{\rho}$$
+            </div>
+
+            <h4>Key Blending: <i>Editing Effectiveness and Consistency</i></h4>
+            <p>
+                Key blending stabilizes attention for editing consistency. We blend current keys and apply masked blending to previous-frame key:
+            </p>
+
+            <div class="formula-box">
+                $$\tilde{K}_{\text{SA}}^{\text{tgt}} = r_{t_i} K_{\text{SA}}^{\text{tgt}} + (1 - r_{t_i}) K_{\text{SA}}^{\text{src}}$$
+                $$\tilde{K}_{\text{prev}}^{\text{tgt}} = M_{\text{prev}} \odot (r_{t_i} K_{\text{prev}}^{\text{tgt}} + (1 - r_{t_i}) K_{\text{prev}}^{\text{src}}) + (1 - M_{\text{prev}}) \odot K_{\text{prev}}^{\text{tgt}}$$
+            </div>
+
+            <h4>Source KV Injection: <i>Background Preservation</i></h4>
+            <p>
+                Source KV injection provides background details when $t < t^{inj}$ (where $t^{inj} = 0.5$). The Iverson bracket $[t < t^{inj}]$ excludes the term when the condition is false. The final self-attention uses:
+            </p>
+
+            <div class="formula-box">
+                $$Q = \tilde{Q}_{\text{SA}}^{\text{tgt}}, \quad K = [\tilde{K}_{\text{SA}}^{\text{tgt}}, \tilde{K}_{\text{prev}}^{\text{tgt}}, [t < t^{\text{inj}}] \cdot (M_{\text{curr}} \odot K_{\text{SA}}^{\text{src}})]$$
+                $$V = [V_{\text{SA}}^{\text{tgt}}, V_{\text{prev}}^{\text{tgt}}, [t < t^{\text{inj}}] \cdot (M_{\text{curr}} \odot V_{\text{SA}}^{\text{src}})]$$
+            </div>
+
+            <!-- Cross-Attention Grounding and Boosting (Section 4.3) -->
+            <h3>Cross-Attention Grounding and Boosting</h3>
+
+            <h4>Grounding: <i>Editing-Related Mask</i></h4>
+            <p>
+                Grounding identifies editing regions via foreground-background attention differences. We compute the mask from the difference between averaged attentions over trigger words $\mathcal{T}$ and other words in the prompt $\mathcal{P}$, and use the Heaviside step function $H$ for binarization:
+            </p>
+
+            <div class="formula-box">
+                $$M^{\phi} = H\left( \frac{\sum_{p \in \mathcal{T}} A_{\text{CA}}^{\phi}(p, Q_{\text{CA}}^{\phi})}{|\mathcal{T}|} - \frac{\sum_{p \in \mathcal{P} \setminus \mathcal{T}} A_{\text{CA}}^{\phi}(p, Q_{\text{CA}}^{\phi})}{|\mathcal{P} \setminus \mathcal{T}|} \right)$$
+            </div>
+
+            <p>
+                where $\phi \in \{\text{src}, \text{tgt}\}$ denotes the branch. We obtain $M^{\text{src}}$ at $t=0$ and $M^{\text{tgt}}$ at $t=t^{\text{inj}}$, then compute the union mask $M = \bigcup_{\phi} M^{\phi}$.
+            </p>
+
+            <h4>Boosting: <i>Regional Editing Enhancement</i></h4>
+            <p>
+                Boosting enhances trigger words inside editing regions. We modify the attention scores with weight $w_{p,q}$ controlled by $\omega$:
+            </p>
+
+            <div class="formula-box">
+                $$A_{\text{CA}}^{\text{tgt}}(p,q) = \frac{\exp(S(p,q) + \ln w_{p,q})}{\sum_{j \in Q_{\text{CA}}^{\text{tgt}}} \exp(S(j,q) + \ln w_{j,q})}, \quad w_{p,q} = \begin{cases} \omega & \text{if } p \in \mathcal{T} \text{ and } M(q)=1 \\ 1 & \text{otherwise} \end{cases}$$
+            </div>
+
+            <p>
+                where $S(p,q)$ is the pre-softmax attention score, and $\omega$ controls editing strength.
+            </p>
+
+            <!-- Source-Oriented Guidance (Section 4.4) -->
+            <h3>Source-Oriented Guidance</h3>
+            <p>
+                To suppress stochastic artifacts, we compute the velocity prediction error by comparing against the linear-interpolation ground-truth:
+            </p>
+
+            <div class="formula-box">
+                $$v_{t_i}^{\text{gt}} = \epsilon_{t_i} - x_0^{\text{src}}, \quad g_{t_i} = v_{t_i}^{\text{gt}} - v_{t_i}^{\text{src}}$$
+            </div>
+
+            <p>
+                This error is projected to the target branch via soft mask AMN(·) (Abs-Mean-Norm: channel-wise mean of absolute values, then min-max normalized) to correct the target velocity:
+            </p>
+
+            <div class="formula-box">
+                $$\tilde{v}_{t_i}^{\text{tgt}} = v_{t_i}^{\text{tgt}} + \text{AMN}(v_{t_i}^{\text{tgt}} - v_{t_i}^{\text{src}}) \odot g_{t_i}, \quad z_{t_{i-1}}^{\text{tgt}} = x_{t_i}^{\text{tgt}} - t_i \tilde{v}_{t_i}^{\text{tgt}}$$
+            </div>
+
+            <!-- Visual Prompting (Section 4.5) -->
+            <h3>Visual Prompting</h3>
+
+            <p>
+                For fine-grained visual control, users can provide an edited first frame as a visual prompt. The framework treats it as a previously generated video chunk, incorporating detailed editing effects into target generation. It requires only one additional forward of the streaming generator.
+            </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== RESULTS SECTION ==================== -->
+    <section class="results-section">
+        <div class="container">
+            <h2 id="results">Results</h2>
+            <p>
+                StreamGVE achieves state-of-the-art performance on  <a href="https://github.com/MinghanLi/FiVE-Bench" ><strong>FiVE-Bench</strong></a>, a comprehensive benchmark spanning 100 videos and 420 editing cases across six edit types: color alteration, material modification, object substitution with/without non-rigid deformation, addition, and removal.
+            </p>
+
+            <!-- Quantitative Results Table Placeholder -->
+                <figure class="results-figure">
+                    <img src="assets/tab.png" alt="Comparison of video editing methods on FiVE-Bench">
+                    <figcaption>
+                        <strong>Comparison of video editing methods on <a href="https://github.com/MinghanLi/FiVE-Bench" >FiVE-Bench</a></strong>. StreamGVE (Ours SF and Ours LL<sup>§</sup>) delivers consistently better results with minimal time cost.
+                    </figcaption>
+                </figure>
+
+            <!-- Qualitative Comparison Videos -->
+
+            <!-- <h3 id="qualitative-comparisons">Qualitative Comparisons</h3> -->
+            <hr>
+
+            <!-- Short-Video Editing Comparison -->
+            <div class="qualitative-video-area">
+                <h4 class="qualitative-video-title">Short-Video Editing</h4>
+                <div class="qualitative-video-wrapper">
+                    <video muted playsinline controls preload="metadata">
+                        <source src="./video_assets/final_grid9_concat.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <p class="qualitative-video-caption">Comparison of different methods on short-video editing tasks.</p>
+            </div>
+
+            <!-- Static Figures (Alternative/Additional to comparison rows) -->
+            <div class="results-figures">
+                <figure class="results-figure">
+                    <img src="assets/qualitative.png" alt="Qualitative comparisons with baseline methods">
+                    <figcaption>
+                        <strong>Qualitative comparisons.</strong> StreamGVE (Ours SF and Ours LL<sup>§</sup>) demonstrates advantages over previous state-of-the-art methods.
+                    </figcaption>
+                </figure>
+            </div>
+
+            <!-- Long-Video Editing Comparison -->
+            <div class="qualitative-video-area">
+                <h4 class="qualitative-video-title">Long-Video Editing</h4>
+                <div class="qualitative-video-wrapper">
+                    <video muted playsinline controls preload="metadata">
+                        <source src="./video_assets/all_samples_concat_two_rows_small.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <p class="qualitative-video-caption">Comparison of different methods on long-video editing tasks.</p>
+            </div>
+
+            <!-- Static Figures (Alternative/Additional to comparison rows) -->
+            <div class="results-figures">
+                <figure class="results-figure">
+                    <img src="assets/long_video.png" alt="Long video editing results">
+                    <figcaption>
+                        <strong>Long video editing comparisons.</strong> Results on videos with over 470 frames (16 FPS, 30 seconds) demonstrating streaming editing capability.
+                    </figcaption>
+                </figure>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CITATION SECTION ==================== -->
+    <section id="citation" class="citation-section">
+        <div class="container">
+            <h2>Citation</h2>
+            <p>If you find this work useful, please consider citing:</p>
+            <div class="bibtex-box">
+                <pre><code>TODO</code></pre>
+                <button class="copy-btn" onclick="copyBibtex()">Copy</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== ACKNOWLEDGEMENTS ==================== -->
+    <section class="acknowledgements-section">
+        <div class="container">
+            <h2>Acknowledgements</h2>
+            <p>
+                We sincerely thank the open-source community for their awesome work, particularly <a href="https://github.com/guandeh17/Self-Forcing">Self Forcing</a>, <a href="https://github.com/NVlabs/LongLive">LongLive</a>, and <a href="https://github.com/DSL-Lab/UniEdit-Flow">UniEdit-Flow</a>. 😊
+            </p>
+            <p>
+                Additionally, we would also like to thank the <a href="https://github.com/MinghanLi/FiVE-Bench" >FiVE-Bench</a> team for providing comprehensive baseline survey and great benchmark.
+            </p>
+            <!-- TODO: Add specific funding acknowledgements -->
+            <!-- <p>
+                This work was supported in part by ...
+            </p> -->
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 StreamGVE Project. All rights reserved.</p>
+            <!-- <p class="footer-note">Project page for arXiv preprint</p> -->
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
