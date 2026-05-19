@@ -21,7 +21,7 @@ VIdeo Results are all shown in our [*Project Page*](https://dsl-lab.github.io/St
 StreamGVE is a training-free video editing framework built on few-step streaming video generation models. Instead of treating editing as data-to-data transformation, StreamGVE formulates editing as source-conditioned noise-to-target generation, thus makeing it possible for few-step fast controllable video editing. StreamGVE supports **few-step text-driven video editing** and **optional first-frame visual prompting** for **videos of any length**. It is implemented on streaming video generation models:
 
 - [`Self-Forcing_StreamGVE`](./Self-Forcing_StreamGVE/README.md): StreamGVE built on [Self Forcing](https://github.com/guandeh17/Self-Forcing).
-- [`LongLive_StreamGVE`](./LongLive_StreamGVE/README.md): StreamGVE built on [LongLive](https://github.com/NVlabs/LongLive/tree/2462895575c579617af5089c9a05c7b500dc0036).
+- [`LongLive_StreamGVE`](./LongLive_StreamGVE/README.md): StreamGVE built on [LongLive v1.0](https://github.com/NVlabs/LongLive/tree/v1.0).
 
 <p align="center">
   <img src="assets/framework.png" width="95%" alt="StreamGVE framework">
