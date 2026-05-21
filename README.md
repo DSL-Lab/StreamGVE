@@ -4,7 +4,7 @@
 
 <sup>1</sup>The University of British Columbia, <sup>2</sup>ETH Zürich, <sup>3</sup>McMaster University, <sup>4</sup>Vector Institute, <sup>5</sup>Canada CIFAR AI Chair
 
-[![Paper](https://img.shields.io/badge/ArXiv-Paper-red?style=flat-square&logo=arxiv&logoColor=white)]()
+[![Paper](https://img.shields.io/badge/ArXiv-Paper-red?style=flat-square&logo=arxiv&logoColor=white)](http://arxiv.org/abs/2605.21466)
 [![Code](https://img.shields.io/badge/GitHub-Code-blue?style=flat-square&logo=github&logoColor=white)](https://github.com/DSL-Lab/StreamGVE/)
 [![Page](https://img.shields.io/badge/StreamGVE-Project_Page-peru?style=flat-square&logo=googlechrome&logoColor=white)](https://dsl-lab.github.io/StreamGVE/)
 
@@ -97,8 +97,16 @@ This repository builds on the excellent open-source work of [Self Forcing](https
 
 ## 🔮 Citation
 
-If you find this work useful, please consider citing:
+If you find this work useful, please consider citing, thanks!
 
 ```bibtex
-TODO
+@misc{jiao2026streamgvetrainingfreevideoediting,
+      title={StreamGVE: Training-Free Video Editing via Few-Step Streaming Video Generation}, 
+      author={Guanlong Jiao and Chenyangguang Zhang and Jia Jun Cheng Xian and Zewei Zhang and Renjie Liao},
+      year={2026},
+      eprint={2605.21466},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2605.21466}, 
+}
 ```
