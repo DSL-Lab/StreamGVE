@@ -117,6 +117,15 @@ section:nth-child(even) {
     white-space: nowrap;
 }
 
+.paper-venue {
+    font-family: var(--font-serif);
+    font-size: clamp(2.0rem, 1vw, 1.2rem);
+    font-weight: 700;
+    color: var(--color-text-light);
+    margin-bottom: 22px;
+    letter-spacing: -0.01em;
+}
+
 /* Authors */
 .authors {
     display: flex;
@@ -150,7 +159,7 @@ section:nth-child(even) {
 .affiliations {
     color: var(--color-text-light);
     font-size: 0.88rem;
-    margin-bottom: 28px;
+    margin-bottom: 14px;
 }
 
 .affiliations p {
