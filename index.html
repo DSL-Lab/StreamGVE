@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamGVE: Training-Free Video Editing via Few-Step Streaming Video Generation</title>
+    <title>StreamEdit: Training-Free Video Editing via Few-Step Streaming Video Generation</title>
     <link rel="stylesheet" href="styles.css">
     <!-- KaTeX for math rendering -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -21,7 +21,7 @@
     <!-- ==================== HEADER SECTION ==================== -->
     <header class="site-header">
         <div class="container">
-            <h1 class="paper-title">StreamGVE</h1>
+            <h1 class="paper-title">StreamEdit</h1>
             <p class="paper-subtitle">Training-Free Video Editing via Few-Step Streaming Video Generation</p>
 
             <!-- Author List -->
@@ -67,7 +67,7 @@
                     </svg>
                     Paper
                 </a>
-                <a href="https://github.com/DSL-Lab/StreamGVE/" class="btn btn-secondary" target="_blank">
+                <a href="https://github.com/DSL-Lab/StreamEdit/" class="btn btn-secondary" target="_blank">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                     </svg>
@@ -103,10 +103,10 @@
         <div class="container">
             <!-- Teaser Image -->
             <figure class="teaser-figure">
-                <img src="assets/teaser.png" alt="StreamGVE teaser showing text-driven and image-prompted video editing results">
+                <img src="assets/teaser.png" alt="StreamEdit teaser showing text-driven and image-prompted video editing results">
                 <figcaption>
                     <strong>Training-free text-driven (optional image-conditioned) streaming video editing.</strong>
-                    StreamGVE supports both text-driven video editing and first-frame-prompted editing, suitable for various editing tasks while having superiority in background preservation. Developed on text-to-video streaming generation models, StreamGVE supports efficient video editing for any length, with less than 0.32 second per frame (5 steps) on a single A100 GPU.
+                    StreamEdit supports both text-driven video editing and first-frame-prompted editing, suitable for various editing tasks while having superiority in background preservation. Developed on text-to-video streaming generation models, StreamEdit supports efficient video editing for any length, with less than 0.32 second per frame (5 steps) on a single A100 GPU.
                 </figcaption>
             </figure>
 
@@ -122,15 +122,15 @@
                 We attribute this limitation to the <strong>prevalent data-to-data paradigm</strong>, which is less compatible with modern generative models than <strong>noise-to-data generation</strong>.
             </p>
             <p>
-                To address this gap, we revisit video editing from a noise-to-data perspective and propose <strong>Stream</strong>ing-<strong>G</strong>eneration-based <strong>V</strong>ideo <strong>E</strong>diting (<strong>StreamGVE</strong>), which preserves few-step sampling while seamlessly injecting source-video conditions.
+                To address this gap, we revisit video editing from a noise-to-data perspective and propose <strong>Stream</strong>ing-Generation-based Video <strong>Edit</strong>ing (<strong>StreamEdit</strong>), which preserves few-step sampling while seamlessly injecting source-video conditions.
             </p>
             <p>
-                Built on pre-trained streaming generation models, StreamGVE introduces <i>dual-branch fast sampling</i> with a <i>self-attention bridge</i> and <i>cross-attention grounding/boosting</i> to satisfy both sampling and conditioning requirements.
+                Built on pre-trained streaming generation models, StreamEdit introduces <i>dual-branch fast sampling</i> with a <i>self-attention bridge</i> and <i>cross-attention grounding/boosting</i> to satisfy both sampling and conditioning requirements.
                 We further propose <i>source-oriented guidance</i> to improve target-generation quality, and a <i>visual prompting strategy</i> to enhance editing flexibility and practicality.
             </p>
             <p>
                 The method is effective, robust, and generalizable across different models.
-                Extensive experiments on diverse video editing tasks show that StreamGVE consistently outperforms existing approaches, even in few-step settings with minimal time cost.
+                Extensive experiments on diverse video editing tasks show that StreamEdit consistently outperforms existing approaches, even in few-step settings with minimal time cost.
             </p>
         </div>
     </section>
@@ -703,15 +703,15 @@
                     Conventional training-free editing follows a <strong>data → data</strong> paradigm: inversion-based methods perform source → noise → target transfer, while inversion-free methods perform direct source → target transfer. Both approaches are tightly coupled to iterative procedures and cannot well exploit fast few-step sampling.
                 </p>
                 <p>
-                    We propose viewing video editing as <strong>source-conditioned noise → target generation</strong>. This reformulation preserves the few-step sampling capability of streaming generators while injecting source-video conditions for controllability. Built on pre-trained streaming models (<a href="https://github.com/guandeh17/Self-Forcing">Self Forcing</a>, <a href="https://github.com/NVlabs/LongLive">LongLive</a>), StreamGVE realizes this paradigm through the dual-branch fast sampling and attention manipulations.
+                    We propose viewing video editing as <strong>source-conditioned noise → target generation</strong>. This reformulation preserves the few-step sampling capability of streaming generators while injecting source-video conditions for controllability. Built on pre-trained streaming models (<a href="https://github.com/guandeh17/Self-Forcing">Self Forcing</a>, <a href="https://github.com/NVlabs/LongLive">LongLive</a>), StreamEdit realizes this paradigm through the dual-branch fast sampling and attention manipulations.
                 </p>
             </div>
 
             <!-- Framework Figure -->
             <figure class="method-figure">
-                <img src="assets/framework.png" alt="StreamGVE framework overview">
+                <img src="assets/framework.png" alt="StreamEdit framework overview">
                 <figcaption>
-                    <strong>Overview of the StreamGVE framework.</strong> (a) The generation process of dual-branch fast sampling with source-oriented guidance. (b) Self-attention bridge (S.A.B.) for source condition injection and cross-attention grounding for editing-related region identification.
+                    <strong>Overview of the StreamEdit framework.</strong> (a) The generation process of dual-branch fast sampling with source-oriented guidance. (b) Self-attention bridge (S.A.B.) for source condition injection and cross-attention grounding for editing-related region identification.
                 </figcaption>
             </figure>
 
@@ -844,14 +844,14 @@
         <div class="container">
             <h2 id="results">Results</h2>
             <p>
-                StreamGVE achieves state-of-the-art performance on  <a href="https://github.com/MinghanLi/FiVE-Bench" ><strong>FiVE-Bench</strong></a>, a comprehensive benchmark spanning 100 videos and 420 editing cases across six edit types: color alteration, material modification, object substitution with/without non-rigid deformation, addition, and removal.
+                StreamEdit achieves state-of-the-art performance on  <a href="https://github.com/MinghanLi/FiVE-Bench" ><strong>FiVE-Bench</strong></a>, a comprehensive benchmark spanning 100 videos and 420 editing cases across six edit types: color alteration, material modification, object substitution with/without non-rigid deformation, addition, and removal.
             </p>
 
             <!-- Quantitative Results Table Placeholder -->
                 <figure class="results-figure">
-                    <img src="assets/tab.png" alt="Comparison of video editing methods on FiVE-Bench">
+                    <img src="assets/tab.png" alt="Comparison of video editing on FiVE-Bench">
                     <figcaption>
-                        <strong>Comparison of video editing methods on <a href="https://github.com/MinghanLi/FiVE-Bench" >FiVE-Bench</a></strong>. StreamGVE (Ours SF and Ours LL<sup>§</sup>) delivers consistently better results with minimal time cost.
+                        <strong>Comparison of video editing on <a href="https://github.com/MinghanLi/FiVE-Bench" >FiVE-Bench</a></strong>. StreamEdit (Ours SF and Ours LL<sup>§</sup>) delivers consistently better results with minimal time cost.
                     </figcaption>
                 </figure>
 
@@ -861,7 +861,7 @@
             <hr>
 
             <!-- Short-Video Editing Comparison -->
-            <div class="qualitative-video-area">
+            <!-- <div class="qualitative-video-area">
                 <h4 class="qualitative-video-title">Short-Video Editing</h4>
                 <div class="qualitative-video-wrapper">
                     <video muted playsinline controls preload="metadata">
@@ -869,20 +869,20 @@
                     </video>
                 </div>
                 <p class="qualitative-video-caption">Comparison of different methods on short-video editing tasks.</p>
-            </div>
+            </div> -->
 
             <!-- Static Figures (Alternative/Additional to comparison rows) -->
             <div class="results-figures">
                 <figure class="results-figure">
                     <img src="assets/qualitative.png" alt="Qualitative comparisons with baseline methods">
                     <figcaption>
-                        <strong>Qualitative comparisons.</strong> StreamGVE (Ours SF and Ours LL<sup>§</sup>) demonstrates advantages over previous state-of-the-art methods.
+                        <strong>Qualitative comparisons.</strong> StreamEdit (Ours SF and Ours LL<sup>§</sup>) demonstrates advantages over previous state-of-the-art methods.
                     </figcaption>
                 </figure>
             </div>
 
             <!-- Long-Video Editing Comparison -->
-            <div class="qualitative-video-area">
+            <!-- <div class="qualitative-video-area">
                 <h4 class="qualitative-video-title">Long-Video Editing</h4>
                 <div class="qualitative-video-wrapper">
                     <video muted playsinline controls preload="metadata">
@@ -890,7 +890,7 @@
                     </video>
                 </div>
                 <p class="qualitative-video-caption">Comparison of different methods on long-video editing tasks.</p>
-            </div>
+            </div> -->
 
             <!-- Static Figures (Alternative/Additional to comparison rows) -->
             <div class="results-figures">
@@ -944,7 +944,7 @@
     <!-- ==================== FOOTER ==================== -->
     <footer class="site-footer">
         <div class="container">
-            <p>&copy; 2026 StreamGVE Project. All rights reserved.</p>
+            <p>&copy; 2026 StreamEdit Project. All rights reserved.</p>
             <!-- <p class="footer-note">Project page for arXiv preprint</p> -->
         </div>
     </footer>

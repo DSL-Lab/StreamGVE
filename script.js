@@ -1,5 +1,5 @@
 /**
- * StreamGVE Project Page - Simple Scripts
+ * StreamEdit Project Page - Simple Scripts
  */
 
 // Copy BibTeX to clipboard
